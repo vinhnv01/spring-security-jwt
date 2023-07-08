@@ -2,6 +2,7 @@ package com.example.usermanagerment.service;
 
 
 import com.example.usermanagerment.dto.request.CreateUserRequest;
+import com.example.usermanagerment.dto.request.FilterUserRequest;
 import com.example.usermanagerment.dto.request.UpdateUserRequest;
 import com.example.usermanagerment.dto.response.UserResponse;
 import com.example.usermanagerment.entity.User;
@@ -31,5 +32,8 @@ public interface UserService {
     // Bô xung
     // filter theo phone number , gender , address, role , email
     // search theo  phone number , gender , address, role , email
+
+    List<UserResponse> filter(FilterUserRequest req);
+    List<UserResponse> search(String keyword);
 
 }

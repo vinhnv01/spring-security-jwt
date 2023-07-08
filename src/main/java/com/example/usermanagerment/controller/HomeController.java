@@ -1,5 +1,6 @@
 package com.example.usermanagerment.controller;
 
+import com.example.usermanagerment.dto.request.FilterUserRequest;
 import com.example.usermanagerment.dto.request.UpdateUserRequest;
 import com.example.usermanagerment.dto.response.UserResponse;
 import com.example.usermanagerment.entity.User;
@@ -32,7 +33,7 @@ public class HomeController {
     private UserService userService;
 
     @GetMapping("/list")
-    @PreAuthorize("hasRole('MENTOR')")
+//    @PreAuthorize("hasRole('MENTOR')")
     public ResponseEntity<List<UserResponse>> view() {
         return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
     }
@@ -60,5 +61,16 @@ public class HomeController {
     public ResponseEntity<Boolean> delete(@PathVariable("id") String id) {
         return ResponseEntity.ok(userService.delete(id));
     }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<UserResponse>> filter(final FilterUserRequest req) {
+        return new ResponseEntity<>(userService.filter(req), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserResponse>> search( String keyword) {
+        return new ResponseEntity<>(userService.search(keyword), HttpStatus.OK);
+    }
+
 
 }
