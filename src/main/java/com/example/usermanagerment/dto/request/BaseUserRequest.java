@@ -14,7 +14,6 @@ import lombok.Setter;
 @Getter
 public abstract class BaseUserRequest {
 
-    private String idUserCurrent;
 
     @NotBlank(message = "Không để trống")
     private String fullName;

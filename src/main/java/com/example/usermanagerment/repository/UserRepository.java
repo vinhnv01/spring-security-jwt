@@ -46,4 +46,5 @@ public interface UserRepository extends JpaRepository<User, String> {
                 role ILIKE CONCAT('%', :keyword, '%'))
             """, nativeQuery = true)
     List<User> searchUser(@Param("keyword") String keyword);
+
 }

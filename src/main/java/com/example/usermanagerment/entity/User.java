@@ -60,11 +60,6 @@ public class User {
     @Column(name = "address")
     private String address;
 
-    public User(String id, String fullName) {
-        this.id = id;
-        this.fullName = fullName;
-    }
-
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Roles role;

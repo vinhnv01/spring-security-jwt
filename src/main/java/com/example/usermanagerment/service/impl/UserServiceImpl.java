@@ -10,8 +10,9 @@ import com.example.usermanagerment.repository.UserRepository;
 import com.example.usermanagerment.service.UserService;
 import com.example.usermanagerment.util.Roles;
 import com.example.usermanagerment.util.error.NotFoundException;
+import com.example.usermanagerment.util.security.jwt.JwtUtil;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    @Resource
+    JwtUtil jwtUtil;
+
     @Override
     public List<UserResponse> getAll() {
         List<UserResponse> responses = new ArrayList<>();
@@ -58,17 +62,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(@Valid CreateUserRequest req) {
-
-        System.out.println(req.getIdUserCurrent());
-        Optional<User> optional = userRepository.findById(req.getIdUserCurrent());
-        if (optional.get().getRole() != Roles.MENTOR) {
+    public User create(@Valid CreateUserRequest req) throws Exception {
+        User userDto = jwtUtil.getCurrentUser();
+        if (userDto.getRole() != Roles.MENTOR) {
             throw new NotFoundException("Không có quyền");
         }
         // check email tồn tại
         User chekcEmail = userRepository.findByEmail(req.getEmail());
         if (chekcEmail != null) {
-            throw new RuntimeException();
+            throw new NotFoundException("Email đã tồn tại");
         }
         User add = new User(req);
         add.setPassword(new BCryptPasswordEncoder().encode(add.getPassword()));
@@ -77,12 +79,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(@Valid UpdateUserRequest req) {
+        User userDto = jwtUtil.getCurrentUser();
+        if (userDto.getRole() != Roles.MENTOR) {
+            throw new NotFoundException("Không có quyền");
+        }
         Optional<User> optional = userRepository.findById(req.getId());
         if (!optional.isPresent()) {
             throw new NotFoundException("Không tìm thấy user");
-        }
-        if (!optional.get().getId().equals(req.getIdUserCurrent())) {
-            throw new NotFoundException("Không có quyền");
         }
         User update = new User(req);
         update.setPassword(passwordEncoder.encode(update.getPassword()));

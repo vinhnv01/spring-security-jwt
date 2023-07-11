@@ -17,11 +17,11 @@ import java.util.List;
  */
 public interface UserService {
 
-    List<UserResponse> getAll();
+    List<UserResponse> getAll() throws Exception;
 
     Page<UserResponse> findAll(Pageable pageable);
 
-    User create(@Valid final CreateUserRequest req);
+    User create(@Valid final CreateUserRequest req) throws Exception;
 
     User update(@Valid final UpdateUserRequest req);
 
@@ -34,6 +34,7 @@ public interface UserService {
     // search theo  phone number , gender , address, role , email
 
     List<UserResponse> filter(FilterUserRequest req);
+
     List<UserResponse> search(String keyword);
 
 }

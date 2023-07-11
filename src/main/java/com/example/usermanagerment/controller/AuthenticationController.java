@@ -1,17 +1,11 @@
 package com.example.usermanagerment.controller;
 
 
-import com.example.usermanagerment.dto.auth.AuthenticationDTO;
-import com.example.usermanagerment.dto.auth.AuthenticationResponse;
-import com.example.usermanagerment.util.security.UserDetailsServiceImpl;
-import com.example.usermanagerment.util.security.jwt.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.example.usermanagerment.dto.auth.LoginRequest;
+import com.example.usermanagerment.dto.auth.LoginResponse;
+import com.example.usermanagerment.service.LoginService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,30 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin("*")
 public class AuthenticationController {
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-
+    @Resource
+    private LoginService loginService;
 
     @PostMapping("/authenticate")
-    public AuthenticationResponse createAuthenticationToken(@RequestBody AuthenticationDTO authenticationDTO)
-            throws BadCredentialsException, DisabledException, UsernameNotFoundException {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationDTO.getEmail(), authenticationDTO.getPassword()));
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Tên đăng nhập hoặc mật khẩu không chính xác!");
-        }
+    public LoginResponse createAuthenticationToken(@RequestBody LoginRequest request, HttpServletRequest httpServletRequest)
+            throws Exception {
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationDTO.getEmail());
-
-        final String jwt = jwtUtil.generateToken(userDetails.getUsername());
-
-        return new AuthenticationResponse(jwt);
+        return loginService.login(httpServletRequest, request);
 
     }
 
